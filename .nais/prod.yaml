@@ -1,0 +1,50 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: sf-logout
+  namespace: teamcrm
+  labels:
+    team: teamcrm
+spec:
+  webproxy: true
+  image: {{ image }}
+  port: 8080
+  replicas:
+    min: 1
+    max: 1
+  liveness:
+    path: /isAlive
+    initialDelay: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  readiness:
+    path: /isReady
+    initialDelay: 5
+    periodSeconds: 5
+    failureThreshold: 30
+  prometheus:
+    enabled: true
+    path: /metrics
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 4096Mi
+    requests:
+      cpu: 100m
+      memory: 2048Mi
+  vault:
+    enabled: true
+    paths:
+      - mountPath: /var/run/secrets/nais.io/vault
+        kvPath: /kv/prod/fss/salesforce-audit/default
+  env:
+    - name: MS_BETWEEN_WORK
+      value: '600000'
+    - name: SF_INSTANCE
+      value: PRODUCTION
+    - name: SF_TOKENHOST
+      value: 'https://login.salesforce.com/services/oauth2/token'
+    - name: SF_VERSION
+      value: 'v48.0'
+    - name: VAULT_INSTANCE
+      value: PRODUCTION

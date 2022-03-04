@@ -88,7 +88,7 @@ fun Response.parseResponseAndSendBigQuery(dataprodukt: Dataprodukt): Pair<Boolea
 
  */
 
-internal fun fetchAndSend(localDate: LocalDate): Boolean {
+internal fun doLogoutCall(): Boolean {
     var postedAmount = 0
     var confirmedSuccess: Boolean = false
     try {
@@ -106,6 +106,7 @@ internal fun fetchAndSend(localDate: LocalDate): Boolean {
                         val instance_url = accessToken.instance_url
                         val token = accessToken.access_token
 
+                        confirmedSuccess = true
                         log.info { "INVESTIGATE - got ourselves a token!" }
                         /*
                         doProductQueryCall(instance_url, dataprodukt.getQuery(), localDate, token) { response ->
@@ -132,13 +133,13 @@ internal fun fetchAndSend(localDate: LocalDate): Boolean {
         workMetrics.issues.inc()
         return false
     }
-    return true
+    return confirmedSuccess
 }
 
 internal fun work(): ExitReason {
     log.info { "Work session starting" }
     workMetrics.clearAll()
-    val successChat = fetchAndSend(LocalDate.now().minusDays(1))
+    val successChat = doLogoutCall()
     log.info { "Work session finished" }
 
     return ExitReason.Work

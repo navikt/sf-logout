@@ -1,0 +1,23 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Salesforce community logout API",
+        "version": "1.0"
+    },
+    "servers": [
+        { "url": "https://communitylogout.ekstern.dev.nav.no" }
+    ],
+    "paths": {
+        "/do": {
+            "post": {
+                "tags": ["Do"],
+                "description": "Endepunkt for å trigge community logout",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        }
+    }
+}

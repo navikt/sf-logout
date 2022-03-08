@@ -19,6 +19,9 @@
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "417": {
+                        "description": "Expectation Failed"
                     }
                 },
                 "requestBody": {

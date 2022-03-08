@@ -24,7 +24,7 @@ fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (
     val uri = "$instance_url$query"
     log.info { "Will do post call: $uri, body $sid" }
 
-    callback(client(Request(Method.POST, uri).header("Content-Type", "text/plain").header("Authorization", "Bearer $token").body(sid)))
+    callback(client(Request(Method.POST, uri).header("Content-Type", "application/json").header("Authorization", "Bearer $token").body("{\"sid\":\"$sid\"}")))
 }
 /*
 fun doContinuationGetCall(instance_url: String, nextRecordsUrl: String, token: String, callback: (Response) -> Unit) {

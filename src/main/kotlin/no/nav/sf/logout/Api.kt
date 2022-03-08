@@ -29,8 +29,11 @@ fun naisAPI(): HttpHandler = routes(
     "/logout" bind Method.POST to { request ->
         log.info { "Logout call" }
         log.info { "Request $request" }
-        val success = doLogoutCall(request.bodyString())
-        Response(if (success) Status.OK else Status.EXPECTATION_FAILED).body("Called logout endpoint, success: $success")
+
+        if (request.query("sid") == null) Response(Status.EXPECTATION_FAILED) else {
+            val success = doLogoutCall(request.query("sid")!!)
+            Response(if (success) Status.OK else Status.EXPECTATION_FAILED).body("Called logout endpoint, success: $success")
+        }
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },
     NAIS_ISREADY bind Method.GET to { Response(Status.OK) },

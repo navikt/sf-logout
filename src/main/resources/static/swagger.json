@@ -11,7 +11,7 @@
     ],
     "paths": {
         "/logout": {
-            "post": {
+            "get": {
                 "tags": [
                     "Logout"
                 ],
@@ -24,17 +24,17 @@
                         "description": "Expectation Failed"
                     }
                 },
-                "requestBody": {
-                    "required": true,
-                    "description": "Sid",
-                    "content": {
-                        "text/plain": {
-                            "schema": {
-                                "type": "string"
-                            }
-                        }
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "sid",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "sid",
+                        "required": true
                     }
-                }
+                ]
             }
         }
     }

@@ -56,13 +56,13 @@ object Bootstrap {
 
     private tailrec fun loop() {
 
-        log.info { " In loop " }
+        // log.info { " In loop " }
 
         val stop = ShutdownHook.isActive() || PrestopHook.isActive()
         when {
             stop -> Unit
             !stop -> {
-                log.info { "Continue in loop... " }
+                // log.info { "Continue in loop... " }
                 // work()
                 /*
                 if (hasPostedToday) {

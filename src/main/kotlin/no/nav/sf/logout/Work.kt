@@ -8,9 +8,6 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.urlEncoded
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 private val log = KotlinLogging.logger {}
 
@@ -21,17 +18,13 @@ sealed class ExitReason {
     object Work : ExitReason()
 }
 
-fun doProductQueryCall(instance_url: String, query: String, localDate: LocalDate, token: String, callback: (Response) -> Unit) {
+fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
     val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
-    val uri = "$instance_url${query
-        .replace("TODAY", "${localDate.format(DateTimeFormatter.ISO_DATE)}T00:00:00Z".urlEncoded())
-        .replace("TOMORROW", "${localDate.plusDays(1).format(DateTimeFormatter.ISO_DATE)}T00:00:00Z".urlEncoded())
-        .replace(">", ">".urlEncoded())
-        .replace("<", "<".urlEncoded())
-    }"
-    log.info { "Will do get call: $uri" }
+    val query = "/services/apexrest/idporten/logout"
+    val uri = "$instance_url$query"
+    log.info { "Will do post call: $uri, body $sid" }
 
-    callback(client(Request(Method.GET, uri).header("Authorization", "Bearer $token")))
+    callback(client(Request(Method.POST, uri).header("Authorization", "Bearer $token").body(sid)))
 }
 /*
 fun doContinuationGetCall(instance_url: String, nextRecordsUrl: String, token: String, callback: (Response) -> Unit) {
@@ -88,8 +81,7 @@ fun Response.parseResponseAndSendBigQuery(dataprodukt: Dataprodukt): Pair<Boolea
 
  */
 
-internal fun doLogoutCall(): Boolean {
-    var postedAmount = 0
+internal fun doLogoutCall(sid: String): Boolean {
     var confirmedSuccess: Boolean = false
     try {
         doAccessTokenCall {
@@ -105,21 +97,14 @@ internal fun doLogoutCall(): Boolean {
                         // log.info { "We should be authorized with accesstoken" }
                         val instance_url = accessToken.instance_url
                         val token = accessToken.access_token
-
-                        confirmedSuccess = true
                         log.info { "INVESTIGATE - got ourselves a token!" }
-                        /*
-                        doProductQueryCall(instance_url, dataprodukt.getQuery(), localDate, token) { response ->
-                            var doneAndNextUrl = response.parseResponseAndSendBigQuery(dataprodukt)
-                            while (!doneAndNextUrl.first) {
-                                log.info { "Continuation fetch on paginated response" }
-                                doContinuationGetCall(instance_url, doneAndNextUrl.second, token) { responseCont ->
-                                    doneAndNextUrl = responseCont.parseResponseAndSendBigQuery(dataprodukt)
-                                }
+
+                        doLogoutCallSF(instance_url, sid, token) { response ->
+                            log.info { "INVESTIGATE - Got response status ${response.status} and body ${response.body}" }
+                            if (response.status == Status.OK) {
+                                confirmedSuccess = true
                             }
                         }
-
-                         */
                     }
                 }
                 else -> {
@@ -139,7 +124,7 @@ internal fun doLogoutCall(): Boolean {
 internal fun work(): ExitReason {
     log.info { "Work session starting" }
     workMetrics.clearAll()
-    val successChat = doLogoutCall()
+    // val successChat = doLogoutCall()
     log.info { "Work session finished" }
 
     return ExitReason.Work

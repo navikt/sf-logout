@@ -8,13 +8,24 @@
         { "url": "https://communitylogout.ekstern.dev.nav.no" }
     ],
     "paths": {
-        "/do": {
-            "get": {
-                "tags": ["Do"],
+        "/logout": {
+            "post": {
+                "tags": ["Logout"],
                 "description": "Endepunkt for å trigge community logout",
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                },
+                "requestBody": {
+                    "required": true,
+                    "description": "Sid",
+                    "content": {
+                        text/plain: {
+                            schema: {
+                                type: "string"
+                            }
+                        }
                     }
                 }
             }

@@ -26,8 +26,8 @@ private val log = KotlinLogging.logger { }
 
 fun naisAPI(): HttpHandler = routes(
     "/static" bind static(ResourceLoader.Classpath("/static")),
-    "/do" bind Method.GET to {
-        Response(Status.OK).body("Called do endpoint, success: ${doLogoutCall()}")
+    "/logout" bind Method.POST to { request ->
+        Response(Status.OK).body("Called logout endpoint, success: ${doLogoutCall(request.bodyString())}")
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },
     NAIS_ISREADY bind Method.GET to { Response(Status.OK) },

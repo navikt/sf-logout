@@ -26,7 +26,7 @@ private val log = KotlinLogging.logger { }
 
 fun naisAPI(): HttpHandler = routes(
     "/static" bind static(ResourceLoader.Classpath("/static")),
-    "/logout" bind Method.POST to { request ->
+    "/logout" bind Method.GET to { request ->
         log.info { "Logout call" }
         log.info { "Request $request" }
 

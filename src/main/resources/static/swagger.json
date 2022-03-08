@@ -5,12 +5,16 @@
         "version": "1.0"
     },
     "servers": [
-        { "url": "https://communitylogout.ekstern.dev.nav.no" }
+        {
+            "url": "https://communitylogout.ekstern.dev.nav.no"
+        }
     ],
     "paths": {
         "/logout": {
             "post": {
-                "tags": ["Logout"],
+                "tags": [
+                    "Logout"
+                ],
                 "description": "Endepunkt for å trigge community logout",
                 "responses": {
                     "200": {
@@ -21,9 +25,9 @@
                     "required": true,
                     "description": "Sid",
                     "content": {
-                        text/plain: {
-                            schema: {
-                                type: "string"
+                        "text/plain": {
+                            "schema": {
+                                "type": "string"
                             }
                         }
                     }

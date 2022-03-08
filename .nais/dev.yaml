@@ -39,6 +39,11 @@ spec:
   ingresses:
     - "https://communitylogout.ekstern.dev.nav.no"
     - "https://communitylogout.dev.intern.nav.no"
+  accessPolicy:
+    outbound:
+      external:
+        - host: test.salesforce.com
+        - host: navdialog--sit2.my.salesforce.com
   env:
     - name: MS_BETWEEN_WORK
       value: '600000'

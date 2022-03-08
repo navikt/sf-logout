@@ -97,7 +97,7 @@ internal fun doLogoutCall(sid: String): Boolean {
                         // log.info { "We should be authorized with accesstoken" }
                         val instance_url = accessToken.instance_url
                         val token = accessToken.access_token
-                        log.info { "INVESTIGATE - got ourselves a token!" }
+                        log.info { "INVESTIGATE -  got ourselves a token!" }
 
                         doLogoutCallSF(instance_url, sid, token) { response ->
                             log.info { "INVESTIGATE - Got response status ${response.status} and body ${response.body}" }

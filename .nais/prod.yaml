@@ -32,11 +32,17 @@ spec:
     requests:
       cpu: 100m
       memory: 2048Mi
-  vault:
-    enabled: true
-    paths:
-      - mountPath: /var/run/secrets/nais.io/vault
-        kvPath: /kv/prod/fss/salesforce-audit/default
+  envFrom:
+    - secret: sf-logout
+  filesFrom:
+    - secret: sf-logout
+  ingresses:
+    - "https://communitylogout.nav.no"
+  accessPolicy:
+    outbound:
+      external:
+        - host: login.salesforce.com
+        - host: navdialog.my.salesforce.com
   env:
     - name: MS_BETWEEN_WORK
       value: '600000'
@@ -47,4 +53,4 @@ spec:
     - name: SF_VERSION
       value: 'v48.0'
     - name: VAULT_INSTANCE
-      value: PRODUCTION
+      value: GCP

@@ -34,6 +34,8 @@ object Bootstrap {
 
     val projectId = System.getenv("GCP_TEAM_PROJECT_ID")
 
+    var accessToken: AccessToken? = null
+
     fun start() {
         log.info { "Starting app" }
         /*

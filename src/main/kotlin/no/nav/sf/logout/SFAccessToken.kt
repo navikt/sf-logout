@@ -20,6 +20,10 @@ data class AccessToken(
     val signature: String = ""
 )
 
+fun AccessToken.ageInMinutes(): Int {
+    return ((System.currentTimeMillis() - this.issued_at.toLong()) / 60000L).toInt()
+}
+
 fun doAccessTokenCall(callback: (Response) -> Unit) {
     val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
 

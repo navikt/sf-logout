@@ -36,7 +36,7 @@ fun refreshAccessToken() {
             }
             Status.OK -> {
                 Bootstrap.accessToken = Klaxon().parse<AccessToken>(it.bodyString())
-                File("/tmp/at").writeText("access_token: ${Bootstrap.accessToken!!.access_token} \nissued at: ${Bootstrap.accessToken!!.issued_at}")
+                File("/tmp/at").writeText("access_token: ${Bootstrap.accessToken!!.access_token} \nissued at: ${Bootstrap.accessToken!!.issued_at} Age in minutes: ${Bootstrap.accessToken?.ageInMinutes()}")
                 log.info { "Access token refreshed" }
             }
             else -> {

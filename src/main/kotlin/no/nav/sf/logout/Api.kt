@@ -27,6 +27,7 @@ fun naisAPI(): HttpHandler = routes(
     "/logout" bind Method.GET to { request ->
         log.info { "Logout call" }
         log.info { "Request $request" }
+        workMetrics.requestCount.inc()
 
         if (request.query("sid") == null) Response(Status.EXPECTATION_FAILED) else {
             val success = doLogoutCall(request.query("sid")!!)

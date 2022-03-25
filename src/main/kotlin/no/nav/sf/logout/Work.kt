@@ -68,7 +68,7 @@ fun doLogoutCall(sid: String): Boolean {
          */
         confirmedSuccess = true
     } catch (e: Exception) {
-        log.error { "Exception catched: ${e.printStackTrace()}" }
+        log.error { "Exception catched:  ${e.printStackTrace()}" }
         workMetrics.issues.inc()
         return false
     }

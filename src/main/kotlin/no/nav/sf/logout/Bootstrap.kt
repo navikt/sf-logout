@@ -34,7 +34,7 @@ object Bootstrap {
 
     val projectId = System.getenv("GCP_TEAM_PROJECT_ID")
 
-    var accessToken: AccessToken? = null
+    var accessToken: AccessToken = AccessToken("", "", "", "", "", "0", "") // Accesstoken at epoch
 
     fun start() {
         log.info { "Starting app" }

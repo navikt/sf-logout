@@ -41,9 +41,10 @@ fun refreshAccessToken() {
                     workMetrics.issues.inc()
                     throw IllegalStateException("Empty accesstoken returned")
                 }
-                File("/tmp/at").writeText("Old access_token: ${Bootstrap.accessToken.access_token} \nOld ssued at: ${Bootstrap.accessToken.issued_at}\nOld Age in minutes: ${Bootstrap.accessToken.ageInMinutes()}")
+                File("/tmp/at").writeText("Old access_token: ${Bootstrap.accessToken.access_token} \nOld issued at: ${Bootstrap.accessToken.issued_at}\nOld Age in minutes: ${Bootstrap.accessToken.ageInMinutes()}")
                 Bootstrap.accessToken = result
-                File("/tmp/at").appendText("access_token: ${Bootstrap.accessToken.access_token} \nissued at: ${Bootstrap.accessToken.issued_at}\nAge in minutes: ${Bootstrap.accessToken.ageInMinutes()}")
+                workMetrics.tokenRefreshCount.inc()
+                File("/tmp/at").appendText("\naccess_token: ${Bootstrap.accessToken.access_token} \nissued at: ${Bootstrap.accessToken.issued_at}\nAge in minutes: ${Bootstrap.accessToken.ageInMinutes()}")
                 log.info { "Access token refreshed" }
             }
             else -> {

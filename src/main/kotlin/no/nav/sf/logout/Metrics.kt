@@ -8,6 +8,11 @@ data class WMetrics(
         .name("request_count")
         .help("request_count")
         .register(),
+    val tokenRefreshCount: Gauge = Gauge
+        .build()
+        .name("token_refresh_count")
+        .help("token_refresh_count")
+        .register(),
     val issues: Gauge = Gauge
         .build()
         .name("issues")

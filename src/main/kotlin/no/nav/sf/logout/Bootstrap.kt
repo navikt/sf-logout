@@ -8,6 +8,7 @@ import no.nav.sf.library.AVault
 import no.nav.sf.library.AnEnvironment
 import no.nav.sf.library.PrestopHook
 import no.nav.sf.library.ShutdownHook
+import java.io.File
 import java.time.LocalTime
 
 private const val EV_bootstrapWaitTime = "MS_BETWEEN_WORK" // default to 10 minutes
@@ -50,6 +51,8 @@ object Bootstrap {
         enableNAISAPIModified {
             log.info("Will wait half a minute with enabled NAIS API")
             conditionalWait(30000) // Wait half a minute
+            refreshAccessToken()
+            File("/tmp/accesstokenatstart").writeText(accessToken.toString())
 
             loop()
         }

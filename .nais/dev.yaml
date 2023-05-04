@@ -38,7 +38,7 @@ spec:
     - secret: sf-logout
   ingresses:
     - "https://communitylogout.ekstern.dev.nav.no"
-    - "https://communitylogout.dev.intern.nav.no"
+    - "https://communitylogout.intern.dev.nav.no"
   accessPolicy:
     outbound:
       external:

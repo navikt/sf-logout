@@ -60,10 +60,6 @@ application {
     mainClassName = 'no.nav.sf.logout.MainKt'
 }
 
-tasks.withType(JavaExec) {
-    jvmArgs = ['-Xms2g', '-Xmx8g']
-}
-
 configurations {
     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }

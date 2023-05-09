@@ -9,21 +9,13 @@ import no.nav.sf.library.AnEnvironment
 import no.nav.sf.library.PrestopHook
 import no.nav.sf.library.ShutdownHook
 import java.io.File
-import java.time.LocalTime
 
 private const val EV_bootstrapWaitTime = "MS_BETWEEN_WORK" // default to 10 minutes
 private val bootstrapWaitTime = AnEnvironment.getEnvOrDefault(EV_bootstrapWaitTime, "60000").toLong()
 
-private val resetRangeStart = LocalTime.parse("00:00:01")
-private val resetRangeStop = LocalTime.parse("03:59:00")
-
-var hasPostedToday = false
-
 private val log = KotlinLogging.logger { }
 
 object Bootstrap {
-
-    val AUDITLOG = KotlinLogging.logger("AuditLogger")
 
     val SFClientID = AVault.getSecretOrDefault("SFClientID", "")
     val SFClientSecret = AVault.getSecretOrDefault("SFClientSecret", "")
@@ -39,14 +31,6 @@ object Bootstrap {
 
     fun start() {
         log.info { "Starting app" }
-        /*
-        enableNAISAPI {
-            // manualTriggeredDayLog("2021-10-08")
-            // fetchAndLogSpecial()
-            loop()
-        }
-        private fun conditionalWait(ms: Long = bootstrapWaitTime)
-         */
 
         enableNAISAPIModified {
             log.info("Will wait half a minute with enabled NAIS API")
@@ -61,32 +45,11 @@ object Bootstrap {
 
     private tailrec fun loop() {
 
-        // log.info { " In loop " }
-
         val stop = ShutdownHook.isActive() || PrestopHook.isActive()
         when {
             stop -> Unit
             !stop -> {
-                // log.info { "Continue in loop... " }
-                // work()
-                /*
-                if (hasPostedToday) {
-                    if (LocalTime.now().inResetRange()) {
-                        log.warn { "Giving up on previous day - resetting posted flag" }
-                        hasPostedToday = false
-                    } else {
-                        // log.info { "Has posted logs today - will sleep 30 minutes." }
-                    }
-                } else {
-                    if (LocalTime.now().inActiveRange()) {
-                        work()
-                    } else {
-                        log.info { "Waiting for active range (later then ${resetRangeStop.format(DateTimeFormatter.ISO_DATE)}) - will sleep 30 minutes." }
-                    }
-                }
-                conditionalWait(1800000) // Half an hour
-
-                */
+                conditionalWait()
                 loop()
             }
         }
@@ -97,8 +60,8 @@ object Bootstrap {
 
             val cr = launch {
                 runCatching { delay(ms) }
-                    .onSuccess { /*log.info { "waiting completed" }*/ }
-                    .onFailure { /*log.info { "waiting interrupted" }*/ }
+                    .onSuccess { }
+                    .onFailure { }
             }
 
             tailrec suspend fun loop(): Unit = when {
@@ -113,12 +76,4 @@ object Bootstrap {
             loop()
             cr.join()
         }
-
-    fun LocalTime.inResetRange(): Boolean {
-        return this.isAfter(resetRangeStart) && this.isBefore(resetRangeStop)
-    }
-
-    fun LocalTime.inActiveRange(): Boolean {
-        return this.isAfter(resetRangeStop)
-    }
 }

@@ -29,8 +29,8 @@ spec:
     limits:
       memory: 2Gi
     requests:
-      cpu: 100m
-      memory: 512Mi
+      cpu: 10m
+      memory: 256Mi
   envFrom:
     - secret: sf-logout
   filesFrom:

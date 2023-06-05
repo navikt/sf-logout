@@ -13,6 +13,7 @@ import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
+import org.http4k.core.cookie.cookie
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
@@ -33,6 +34,12 @@ fun naisAPI(): HttpHandler = routes(
             val success = doLogoutCall(request.query("sid")!!)
             Response(if (success) Status.OK else Status.EXPECTATION_FAILED).body("Called logout endpoint, success: $success")
         }
+    },
+    "/c" bind Method.GET to { request ->
+        val sidCookie = request.cookie("sid")
+        val responseMessage = sidCookie?.value ?: "No sid cookie found"
+
+        Response(Status.OK).body(responseMessage)
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },
     NAIS_ISREADY bind Method.GET to { Response(Status.OK) },

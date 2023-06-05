@@ -20,6 +20,8 @@ sealed class ExitReason {
     object Work : ExitReason()
 }
 
+val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
+
 fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
     val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
     val query = "/services/apexrest/idporten/logout"
@@ -27,6 +29,12 @@ fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (
     log.info { "Will do post call: $uri, body $sid" }
 
     callback(client(Request(Method.POST, uri).header("Content-Type", "application/json").header("Authorization", "Bearer $token").body("{\"sid\":\"$sid\"}")))
+}
+
+fun doUserInfoCallIdporten(token: String, callback: (Response) -> Unit) {
+    val uri = "https://idporten.no/userinfo"
+
+    callback(client(Request(Method.GET, uri).header("Authorization", "Bearer $token")))
 }
 
 fun refreshAccessToken() {

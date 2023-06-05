@@ -9,8 +9,10 @@ import no.nav.sf.library.NAIS_ISREADY
 import no.nav.sf.library.NAIS_METRICS
 import no.nav.sf.library.NAIS_PRESTOP
 import no.nav.sf.library.PrestopHook
+import no.nav.sf.logout.token.TokenValidator
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
+import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.cookie.cookie
@@ -37,11 +39,17 @@ fun naisAPI(): HttpHandler = routes(
     },
     "/c" bind Method.GET to { request ->
         val sidCookie = request.cookie("sid")
-
         if (sidCookie == null) {
             Response(Status.OK).body("No sid cookie found")
         } else {
-            Response(Status.OK).body(sidCookie.value)
+            val idportenToken = TokenValidator.firstValidToken(request)
+            if (!idportenToken.isPresent) {
+                Response(Status.OK).body("Session: ${sidCookie.value}, but not logged in")
+            } else {
+                val uri = "https://idporten.no/userinfo"
+                val response = client(Request(Method.GET, uri).header("Authorization", "Bearer ${idportenToken.get().tokenAsString}"))
+                Response(Status.OK).body("Session: ${sidCookie.value}, response: $response")
+            }
         }
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },

@@ -12,7 +12,6 @@ import no.nav.sf.library.PrestopHook
 import no.nav.sf.logout.token.TokenValidator
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
-import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.core.cookie.cookie
@@ -48,10 +47,13 @@ fun naisAPI(): HttpHandler = routes(
             if (!idportenToken.isPresent) {
                 Response(Status.OK).body("Session: ${sidCookie.value}, but not logged in")
             } else {
+                /*
                 val uri = "https://idporten.no/userinfo"
                 val response = client(Request(Method.GET, uri).header("Authorization", "Bearer ${idportenToken.get().tokenAsString}"))
                 File("/tmp/response").writeText(response.toMessage())
-                Response(Status.OK).body("Session: ${sidCookie.value}, response: $response")
+
+                 */
+                Response(Status.OK).body("Session: ${sidCookie.value} - logged in")
             }
         }
     },

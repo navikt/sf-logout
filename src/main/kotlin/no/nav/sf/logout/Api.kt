@@ -37,9 +37,12 @@ fun naisAPI(): HttpHandler = routes(
     },
     "/c" bind Method.GET to { request ->
         val sidCookie = request.cookie("sid")
-        val responseMessage = sidCookie?.value ?: "No sid cookie found"
 
-        Response(Status.OK).body(responseMessage)
+        if (sidCookie == null) {
+            Response(Status.OK).body("No sid cookie found")
+        } else {
+            Response(Status.OK).body(sidCookie.value)
+        }
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },
     NAIS_ISREADY bind Method.GET to { Response(Status.OK) },

@@ -42,6 +42,10 @@ spec:
       external:
         - host: login.salesforce.com
         - host: navdialog.my.salesforce.com
+  idporten:
+    enabled: true
+    sidecar:
+      enabled: true
   env:
     - name: MS_BETWEEN_WORK
       value: '600000'

@@ -21,6 +21,7 @@ import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
+import java.io.File
 import java.io.StringWriter
 
 private val log = KotlinLogging.logger { }
@@ -43,11 +44,13 @@ fun naisAPI(): HttpHandler = routes(
             Response(Status.OK).body("No sid cookie found")
         } else {
             val idportenToken = TokenValidator.firstValidToken(request)
+            File("/tmp/idportenToken").writeText(if (idportenToken.isPresent) idportenToken.get().tokenAsString else "Not present")
             if (!idportenToken.isPresent) {
                 Response(Status.OK).body("Session: ${sidCookie.value}, but not logged in")
             } else {
                 val uri = "https://idporten.no/userinfo"
                 val response = client(Request(Method.GET, uri).header("Authorization", "Bearer ${idportenToken.get().tokenAsString}"))
+                File("/tmp/response").writeText(response.toMessage())
                 Response(Status.OK).body("Session: ${sidCookie.value}, response: $response")
             }
         }

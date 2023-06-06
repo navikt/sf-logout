@@ -40,13 +40,16 @@ fun naisAPI(): HttpHandler = routes(
     "/c" bind Method.GET to { request ->
         val sidCookie = request.cookie("sid")
         if (sidCookie == null) {
+            log.info { "Login flow - no cookie found" }
             Response(Status.OK).body("No sid cookie found")
         } else {
             val idportenToken = TokenValidator.firstValidToken(request)
             File("/tmp/idportenToken").writeText(if (idportenToken.isPresent) idportenToken.get().tokenAsString else "Not present")
             if (!idportenToken.isPresent) {
+                log.info { "Login flow - missing valid token" }
                 Response(Status.OK).body("Session: ${sidCookie.value}, but not logged in")
             } else {
+                log.info { "Login flow - valid token" }
                 /*
                 val uri = "https://idporten.no/userinfo"
                 val response = client(Request(Method.GET, uri).header("Authorization", "Bearer ${idportenToken.get().tokenAsString}"))

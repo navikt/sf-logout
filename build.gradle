@@ -64,10 +64,6 @@ configurations {
     all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
 }
 
-run {
-    environment "MS_BETWEEN_WORK", "20000"
-}
-
 dependencies {
     implementation "no.nav.sf.library:crm-utilities:$crm_utilities_version"
 

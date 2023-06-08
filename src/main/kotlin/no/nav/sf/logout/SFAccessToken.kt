@@ -1,6 +1,5 @@
 package no.nav.sf.logout
 
-import kotlinx.serialization.Serializable
 import no.nav.sf.library.AnEnvironment
 import org.http4k.client.ApacheClient
 import org.http4k.core.Body
@@ -9,7 +8,6 @@ import org.http4k.core.Request
 import org.http4k.core.Response
 import org.http4k.core.body.toBody
 
-@Serializable
 data class AccessToken(
     val access_token: String = "",
     val scope: String = "",

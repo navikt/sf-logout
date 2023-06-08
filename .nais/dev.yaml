@@ -43,18 +43,8 @@ spec:
       external:
         - host: test.salesforce.com
         - host: navdialog--sit2.my.salesforce.com
-  idporten:
-    enabled: true
-    sidecar:
-      enabled: true
   env:
     - name: MS_BETWEEN_WORK
       value: '600000'
-    - name: SF_INSTANCE
-      value: PREPROD
     - name: SF_TOKENHOST
       value: 'https://test.salesforce.com/services/oauth2/token'
-    - name: SF_VERSION
-      value: 'v48.0'
-    - name: VAULT_INSTANCE
-      value: GCP

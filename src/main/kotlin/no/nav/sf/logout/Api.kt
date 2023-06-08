@@ -9,18 +9,15 @@ import no.nav.sf.library.NAIS_ISREADY
 import no.nav.sf.library.NAIS_METRICS
 import no.nav.sf.library.NAIS_PRESTOP
 import no.nav.sf.library.PrestopHook
-import no.nav.sf.logout.token.TokenValidator
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
-import org.http4k.core.cookie.cookie
 import org.http4k.routing.bind
 import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
-import java.io.File
 import java.io.StringWriter
 
 private val log = KotlinLogging.logger { }
@@ -35,29 +32,6 @@ fun naisAPI(): HttpHandler = routes(
         if (request.query("sid") == null) Response(Status.EXPECTATION_FAILED) else {
             val success = doLogoutCall(request.query("sid")!!)
             Response(if (success) Status.OK else Status.EXPECTATION_FAILED).body("Called logout endpoint, success: $success")
-        }
-    },
-    "/c" bind Method.GET to { request ->
-        val sidCookie = request.cookie("sid")
-        if (sidCookie == null) {
-            log.info { "Login flow - no cookie found" }
-            Response(Status.OK).body("No sid cookie found")
-        } else {
-            val idportenToken = TokenValidator.firstValidToken(request)
-            File("/tmp/idportenToken").writeText(if (idportenToken.isPresent) idportenToken.get().tokenAsString else "Not present")
-            if (!idportenToken.isPresent) {
-                log.info { "Login flow - missing valid token" }
-                Response(Status.OK).body("Session: ${sidCookie.value}, but not logged in")
-            } else {
-                log.info { "Login flow - valid token" }
-                /*
-                val uri = "https://idporten.no/userinfo"
-                val response = client(Request(Method.GET, uri).header("Authorization", "Bearer ${idportenToken.get().tokenAsString}"))
-                File("/tmp/response").writeText(response.toMessage())
-
-                 */
-                Response(Status.OK).body("Session: ${sidCookie.value} - logged in")
-            }
         }
     },
     NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },

@@ -6,7 +6,6 @@ metadata:
   labels:
     team: teamcrm
 spec:
-  webproxy: true
   image: {{ image }}
   port: 8080
   replicas:

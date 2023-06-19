@@ -1,7 +1,5 @@
 package no.nav.sf.logout
 
-import no.nav.sf.library.AnEnvironment
-import org.http4k.client.ApacheClient
 import org.http4k.core.Body
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -23,8 +21,6 @@ fun AccessToken.ageInMinutes(): Int {
 }
 
 fun doAccessTokenCall(callback: (Response) -> Unit) {
-    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
-
     val request = Request(
         Method.POST,
         Application.SFTokenHost

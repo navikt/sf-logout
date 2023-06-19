@@ -2,7 +2,6 @@ package no.nav.sf.logout
 
 import com.beust.klaxon.Klaxon
 import mu.KotlinLogging
-import no.nav.sf.library.AnEnvironment
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -12,17 +11,9 @@ import java.lang.IllegalStateException
 
 private val log = KotlinLogging.logger {}
 
-sealed class ExitReason {
-    object NoSFClient : ExitReason()
-    object NoKafkaClient : ExitReason()
-    object NoEvents : ExitReason()
-    object Work : ExitReason()
-}
-
-val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
+val client = ApacheClient.asHttpHandler()
 
 fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
-    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
     val query = "/services/apexrest/idporten/logout"
     val uri = "$instance_url$query"
     log.info { "Will do post call: $uri, body $sid" }
@@ -75,11 +66,4 @@ fun doLogoutCall(sid: String): Boolean {
         workMetrics.issues.inc()
         return false
     }
-}
-
-fun work(): ExitReason {
-    log.info { "Work session starting" }
-    workMetrics.clearAll()
-    log.info { "Work session finished" }
-    return ExitReason.Work
 }

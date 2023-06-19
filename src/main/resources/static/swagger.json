@@ -20,8 +20,8 @@
                     "200": {
                         "description": "OK"
                     },
-                    "417": {
-                        "description": "Expectation Failed"
+                    "500": {
+                        "description": "Internal server error"
                     }
                 },
                 "parameters": [

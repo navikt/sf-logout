@@ -43,7 +43,5 @@ spec:
         - host: login.salesforce.com
         - host: navdialog.my.salesforce.com
   env:
-    - name: MS_BETWEEN_WORK
-      value: '600000'
     - name: SF_TOKENHOST
       value: 'https://login.salesforce.com/services/oauth2/token'

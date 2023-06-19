@@ -23,11 +23,11 @@ fun AccessToken.ageInMinutes(): Int {
 }
 
 fun doAccessTokenCall(callback: (Response) -> Unit) {
-    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
+    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
 
     val request = Request(
         Method.POST,
-        Bootstrap.SFTokenHost
+        Application.SFTokenHost
     ).body(getBody()).header("Content-Type", "application/x-www-form-urlencoded")
 
     callback(client(request))
@@ -36,9 +36,9 @@ fun doAccessTokenCall(callback: (Response) -> Unit) {
 private fun getBody(): Body {
     return listOf(
         "grant_type" to "password",
-        "client_id" to Bootstrap.SFClientID,
-        "client_secret" to Bootstrap.SFClientSecret,
-        "username" to Bootstrap.SFUsername,
-        "password" to Bootstrap.SFPassword + Bootstrap.SFSecurityToken
+        "client_id" to Application.SFClientID,
+        "client_secret" to Application.SFClientSecret,
+        "username" to Application.SFUsername,
+        "password" to Application.SFPassword + Application.SFSecurityToken
     ).toBody()
 }

@@ -19,21 +19,15 @@ sealed class ExitReason {
     object Work : ExitReason()
 }
 
-val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
+val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
 
 fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
-    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Bootstrap.EV_httpsProxy))
+    val client = ApacheClient.supportProxy(AnEnvironment.getEnvOrDefault(Application.EV_httpsProxy))
     val query = "/services/apexrest/idporten/logout"
     val uri = "$instance_url$query"
     log.info { "Will do post call: $uri, body $sid" }
 
     callback(client(Request(Method.POST, uri).header("Content-Type", "application/json").header("Authorization", "Bearer $token").body("{\"sid\":\"$sid\"}")))
-}
-
-fun doUserInfoCallIdporten(token: String, callback: (Response) -> Unit) {
-    val uri = "https://idporten.no/userinfo"
-
-    callback(client(Request(Method.GET, uri).header("Authorization", "Bearer $token")))
 }
 
 fun refreshAccessToken() {
@@ -48,7 +42,7 @@ fun refreshAccessToken() {
                     workMetrics.issues.inc()
                     throw IllegalStateException("Empty accesstoken returned")
                 }
-                Bootstrap.accessToken = result
+                Application.accessToken = result
                 workMetrics.tokenRefreshCount.inc()
                 log.info { "Access token refreshed" }
             }
@@ -63,9 +57,9 @@ fun refreshAccessToken() {
 fun doLogoutCall(sid: String): Boolean {
     var confirmedSuccess: Boolean = false
     try {
-        if (Bootstrap.accessToken.ageInMinutes() > 10) refreshAccessToken()
-        val instance_url = Bootstrap.accessToken.instance_url
-        val token = Bootstrap.accessToken.access_token
+        if (Application.accessToken.ageInMinutes() > 10) refreshAccessToken()
+        val instance_url = Application.accessToken.instance_url
+        val token = Application.accessToken.access_token
         doLogoutCallSF(instance_url, sid, token) { response ->
             if (response.status == Status.OK) {
                 log.info { "Got response status ${response.status} and body ${response.body}" }
@@ -75,13 +69,12 @@ fun doLogoutCall(sid: String): Boolean {
                 workMetrics.issues.inc()
             }
         }
+        return confirmedSuccess
     } catch (e: Exception) {
-        log.error { "Exception catched:  ${e.printStackTrace()}" }
+        log.error { "Exception catched: ${e.printStackTrace()}" }
         workMetrics.issues.inc()
         return false
     }
-    if (!confirmedSuccess) workMetrics.issues.inc()
-    return confirmedSuccess
 }
 
 fun work(): ExitReason {

@@ -44,7 +44,5 @@ spec:
         - host: test.salesforce.com
         - host: navdialog--sit2.my.salesforce.com
   env:
-    - name: MS_BETWEEN_WORK
-      value: '600000'
     - name: SF_TOKENHOST
       value: 'https://test.salesforce.com/services/oauth2/token'

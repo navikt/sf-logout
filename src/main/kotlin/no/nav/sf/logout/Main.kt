@@ -1,3 +1,3 @@
 package no.nav.sf.logout
 
-fun main() = Bootstrap.start()
+fun main() = Application.start()

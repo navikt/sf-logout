@@ -1,6 +1,6 @@
 package no.nav.sf.logout
 
-import com.beust.klaxon.Klaxon
+import com.google.gson.Gson
 import mu.KotlinLogging
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method
@@ -12,6 +12,8 @@ import java.lang.IllegalStateException
 private val log = KotlinLogging.logger {}
 
 val client = ApacheClient.asHttpHandler()
+
+val gson = Gson()
 
 fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
     val query = "/services/apexrest/idporten/logout"
@@ -28,7 +30,7 @@ fun refreshAccessToken() {
                 log.error { "Access token call salesforce unauthorized" }
             }
             Status.OK -> {
-                val result = Klaxon().parse<AccessToken>(it.bodyString())
+                val result = gson.fromJson(it.bodyString(), AccessToken::class.java)
                 if (result == null) {
                     workMetrics.issues.inc()
                     throw IllegalStateException("Empty accesstoken returned")

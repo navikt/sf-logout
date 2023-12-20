@@ -1,23 +1,6 @@
-buildscript {
-    ext.kotlin_version = '1.4.10'
-    ext.ktor_version = '1.4.0'
-    ext.http4k_version = '3.244.0'
-    ext.kotlin_loggin_version = '1.7.9'
-    ext.logback_version = '1.2.3'
-    ext.log4j_version = '1.7.25'
-    ext.logstash_encoder_version = '6.3'
-    ext.kotlin_coroutine = '1.3.5'
-    ext.kotlin_serialization = '0.20.0'
-    ext.kotest_version = '4.0.3'
-    ext.prometheus_version = '0.8.1'
-    ext.crm_utilities_version = '0.115'
-}
-
 plugins {
     id 'application'
-    id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
-    id 'com.github.ben-manes.versions' version '0.28.0'
     id 'org.jmailen.kotlinter' version '3.2.0'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
@@ -29,10 +12,10 @@ repositories {
     mavenCentral()
     jcenter()
     maven {
-        url "http://packages.confluent.io/maven"
+        url "https://packages.confluent.io/maven"
     }
 
-    ["maven-release", "crm-utilities"].each { repo ->
+    ["maven-release"].each { repo ->
         String token = System.getenv("GITHUB_TOKEN") ?: project.findProperty("githubPassword")
         if (!token) throw new NullPointerException("Missing token, you have to set GITHUB_TOKEN or githubPassword")
         maven {
@@ -65,36 +48,25 @@ configurations {
 }
 
 dependencies {
-    implementation "no.nav.sf.library:crm-utilities:$crm_utilities_version"
+    implementation "no.nav.security:token-validation-core:3.0.0"
 
-    implementation "no.nav.security:token-validation-core:1.3.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5"
 
-    implementation platform('com.google.cloud:libraries-bom:23.0.0')
-    implementation 'com.google.cloud:google-cloud-bigquery'
+    implementation "org.http4k:http4k-server-apache:3.251.0"
+    implementation "org.http4k:http4k-client-apache:3.251.0"
 
-    implementation platform('org.jetbrains.kotlin:kotlin-bom')
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutine"
-    implementation "org.jetbrains.kotlinx:kotlinx-serialization-runtime:$kotlin_serialization"
+    implementation "org.apache.commons:commons-compress:1.24.0" //transient http4k-apache
+    implementation "org.apache.httpcomponents:httpclient:4.5.13" //Desired transient httpclient to http4k-apache
 
-    implementation "org.http4k:http4k-core:$http4k_version"
-    implementation "org.http4k:http4k-server-netty:$http4k_version"
-    implementation "org.http4k:http4k-client-apache:$http4k_version"
 
-    implementation 'com.beust:klaxon:5.0.1'
+    implementation 'com.google.code.gson:gson:2.10'
 
-    implementation "org.slf4j:slf4j-log4j12:1.2"
-    implementation "com.papertrailapp:logback-syslog4j:1.0.0"
+    implementation "io.github.microutils:kotlin-logging:1.7.9"
+    implementation "ch.qos.logback:logback-classic:1.4.14"
+    implementation "net.logstash.logback:logstash-logback-encoder:7.4"
 
-    implementation "io.github.microutils:kotlin-logging:$kotlin_loggin_version"
-    implementation "ch.qos.logback:logback-classic:$logback_version"
-    implementation "net.logstash.logback:logstash-logback-encoder:$logstash_encoder_version"
-
-    implementation "io.prometheus:simpleclient_common:$prometheus_version"
-    implementation "io.prometheus:simpleclient_hotspot:$prometheus_version"
-
-    testImplementation 'org.junit.platform:junit-platform-commons:1.5.2'
-    testImplementation "io.kotest:kotest-runner-junit5-jvm:$kotest_version"
-    testImplementation "io.kotest:kotest-assertions-core-jvm:$kotest_version"
+    implementation "io.prometheus:simpleclient_common:0.8.1"
+    implementation "io.prometheus:simpleclient_hotspot:0.8.1"
 }
 
 test {

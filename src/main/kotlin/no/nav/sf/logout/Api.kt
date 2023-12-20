@@ -2,21 +2,14 @@ package no.nav.sf.logout
 
 import io.prometheus.client.exporter.common.TextFormat
 import mu.KotlinLogging
-import no.nav.sf.library.Metrics
-import no.nav.sf.library.NAIS_DEFAULT_PORT
-import no.nav.sf.library.NAIS_ISALIVE
-import no.nav.sf.library.NAIS_ISREADY
-import no.nav.sf.library.NAIS_METRICS
-import no.nav.sf.library.NAIS_PRESTOP
-import no.nav.sf.library.PrestopHook
 import org.http4k.core.HttpHandler
 import org.http4k.core.Method
 import org.http4k.core.Response
 import org.http4k.core.Status
 import org.http4k.routing.bind
 import org.http4k.routing.routes
+import org.http4k.server.ApacheServer
 import org.http4k.server.Http4kServer
-import org.http4k.server.Netty
 import org.http4k.server.asServer
 import java.io.StringWriter
 
@@ -33,9 +26,9 @@ fun naisAPI(): HttpHandler = routes(
             Response(if (success) Status.OK else Status.INTERNAL_SERVER_ERROR).body("Called logout endpoint, success: $success")
         }
     },
-    NAIS_ISALIVE bind Method.GET to { Response(Status.OK) },
-    NAIS_ISREADY bind Method.GET to { Response(Status.OK) },
-    NAIS_METRICS bind Method.GET to {
+    "/isAlive" bind Method.GET to { Response(Status.OK) },
+    "/isReady" bind Method.GET to { Response(Status.OK) },
+    "/metrics" bind Method.GET to {
         runCatching {
             StringWriter().let { str ->
                 TextFormat.write004(str, Metrics.cRegistry.metricFamilySamples())
@@ -47,20 +40,15 @@ fun naisAPI(): HttpHandler = routes(
             }
             .getOrDefault("")
             .responseByContent()
-    },
-    NAIS_PRESTOP bind Method.GET to {
-        PrestopHook.activate()
-        log.info { "Received PreStopHook from NAIS" }
-        Response(Status.OK)
     }
 )
 
 private fun String.responseByContent(): Response =
     if (this.isNotEmpty()) Response(Status.OK).body(this) else Response(Status.NO_CONTENT)
 
-fun naisAPIServer(port: Int): Http4kServer = naisAPI().asServer(Netty(port))
+fun naisAPIServer(port: Int): Http4kServer = naisAPI().asServer(ApacheServer(port))
 
-fun enableNAISAPIModified(port: Int = NAIS_DEFAULT_PORT, doSomething: () -> Unit): Boolean =
+fun enableNAISAPIModified(port: Int = 8080, doSomething: () -> Unit): Boolean =
     naisAPIServer(port).let { srv ->
         try {
             srv.start().use {

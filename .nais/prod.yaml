@@ -24,6 +24,11 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
+  observability:
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   resources:
     limits:
       memory: 2Gi
@@ -44,7 +49,7 @@ spec:
   env:
     - name: SF_TOKENHOST
       value: 'https://login.salesforce.com/services/oauth2/token'
-    - name: SF_INSTANCE # TODO remove dependency to crm-utilites
+    - name: SF_INSTANCE
       value: PRODUCTION
     - name: SF_VERSION
       value: 'v57.0'

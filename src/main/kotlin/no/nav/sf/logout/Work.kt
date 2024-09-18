@@ -32,7 +32,7 @@ fun refreshAccessToken() {
             Status.OK -> {
                 val result = gson.fromJson(it.bodyString(), AccessToken::class.java)
                 if (result == null) {
-                    workMetrics.issues.inc()
+                    workMetrics.issues.labels("access token empty response").inc()
                     throw IllegalStateException("Empty accesstoken returned")
                 }
                 Application.accessToken = result
@@ -41,14 +41,14 @@ fun refreshAccessToken() {
             }
             else -> {
                 log.error { "Access token call salesforce NOK" }
-                workMetrics.issues.inc()
+                workMetrics.issues.labels("access token fetch NOK").inc()
             }
         }
     }
 }
 
 fun doLogoutCall(sid: String): Boolean {
-    var confirmedSuccess: Boolean = false
+    var confirmedSuccess = false
     try {
         if (Application.accessToken.ageInMinutes() > 10) refreshAccessToken()
         val instance_url = Application.accessToken.instance_url
@@ -59,13 +59,13 @@ fun doLogoutCall(sid: String): Boolean {
                 confirmedSuccess = true
             } else {
                 log.error { "Got response status ${response.status} and body ${response.body}" }
-                workMetrics.issues.inc()
+                workMetrics.issues.labels("logout response ${response.status.code}").inc()
             }
         }
         return confirmedSuccess
     } catch (e: Exception) {
         log.error { "Exception catched: ${e.printStackTrace()}" }
-        workMetrics.issues.inc()
+        workMetrics.issues.labels("${e::class.simpleName}").inc()
         return false
     }
 }

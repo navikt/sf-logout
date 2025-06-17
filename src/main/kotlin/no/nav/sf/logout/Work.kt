@@ -2,7 +2,7 @@ package no.nav.sf.logout
 
 import com.google.gson.Gson
 import mu.KotlinLogging
-import org.http4k.client.ApacheClient
+import org.http4k.client.OkHttp
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Response
@@ -11,7 +11,7 @@ import java.lang.IllegalStateException
 
 private val log = KotlinLogging.logger {}
 
-val client = ApacheClient.asHttpHandler()
+val client = OkHttp()
 
 val gson = Gson()
 

@@ -15,12 +15,24 @@ val client = OkHttp()
 
 val gson = Gson()
 
-fun doLogoutCallSF(instance_url: String, sid: String, token: String, callback: (Response) -> Unit) {
+fun doLogoutCallSF(
+    instance_url: String,
+    sid: String,
+    token: String,
+    callback: (Response) -> Unit,
+) {
     val query = "/services/apexrest/idporten/logout"
     val uri = "$instance_url$query"
     log.info { "Will do post call: $uri, body $sid" }
 
-    callback(client(Request(Method.POST, uri).header("Content-Type", "application/json").header("Authorization", "Bearer $token").body("{\"sid\":\"$sid\"}")))
+    callback(
+        client(
+            Request(
+                Method.POST,
+                uri,
+            ).header("Content-Type", "application/json").header("Authorization", "Bearer $token").body("{\"sid\":\"$sid\"}"),
+        ),
+    )
 }
 
 fun refreshAccessToken() {
@@ -51,9 +63,9 @@ fun doLogoutCall(sid: String): Boolean {
     var confirmedSuccess = false
     try {
         if (Application.accessToken.ageInMinutes() > 10) refreshAccessToken()
-        val instance_url = Application.accessToken.instance_url
+        val instanceUrl = Application.accessToken.instance_url
         val token = Application.accessToken.access_token
-        doLogoutCallSF(instance_url, sid, token) { response ->
+        doLogoutCallSF(instanceUrl, sid, token) { response ->
             if (response.status == Status.OK) {
                 log.info { "Got response status ${response.status} and body ${response.body}" }
                 confirmedSuccess = true

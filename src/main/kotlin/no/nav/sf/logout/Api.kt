@@ -15,40 +15,44 @@ import java.io.StringWriter
 
 private val log = KotlinLogging.logger { }
 
-fun naisAPI(): HttpHandler = routes(
-    // "/static" bind static(ResourceLoader.Classpath("/static")),
-    "/logout" bind Method.GET to { request ->
-        log.info { "Logout call" }
-        workMetrics.requestCount.inc()
+fun naisAPI(): HttpHandler =
+    routes(
+        // "/static" bind static(ResourceLoader.Classpath("/static")),
+        "/logout" bind Method.GET to { request ->
+            log.info { "Logout call" }
+            workMetrics.requestCount.inc()
 
-        if (request.query("sid") == null) Response(Status.BAD_REQUEST) else {
-            val success = doLogoutCall(request.query("sid")!!)
-            Response(if (success) Status.OK else Status.INTERNAL_SERVER_ERROR).body("Called logout endpoint, success: $success")
-        }
-    },
-    "/isAlive" bind Method.GET to { Response(Status.OK) },
-    "/isReady" bind Method.GET to { Response(Status.OK) },
-    "/metrics" bind Method.GET to {
-        runCatching {
-            StringWriter().let { str ->
-                TextFormat.write004(str, Metrics.cRegistry.metricFamilySamples())
-                str
-            }.toString()
-        }
-            .onFailure {
-                log.error { "/prometheus failed writing metrics - ${it.localizedMessage}" }
+            if (request.query("sid") == null) {
+                Response(Status.BAD_REQUEST)
+            } else {
+                val success = doLogoutCall(request.query("sid")!!)
+                Response(if (success) Status.OK else Status.INTERNAL_SERVER_ERROR).body("Called logout endpoint, success: $success")
             }
-            .getOrDefault("")
-            .responseByContent()
-    }
-)
+        },
+        "/isAlive" bind Method.GET to { Response(Status.OK) },
+        "/isReady" bind Method.GET to { Response(Status.OK) },
+        "/metrics" bind Method.GET to {
+            runCatching {
+                StringWriter()
+                    .let { str ->
+                        TextFormat.write004(str, Metrics.cRegistry.metricFamilySamples())
+                        str
+                    }.toString()
+            }.onFailure {
+                log.error { "/prometheus failed writing metrics - ${it.localizedMessage}" }
+            }.getOrDefault("")
+                .responseByContent()
+        },
+    )
 
-private fun String.responseByContent(): Response =
-    if (this.isNotEmpty()) Response(Status.OK).body(this) else Response(Status.NO_CONTENT)
+private fun String.responseByContent(): Response = if (this.isNotEmpty()) Response(Status.OK).body(this) else Response(Status.NO_CONTENT)
 
 fun naisAPIServer(port: Int): Http4kServer = naisAPI().asServer(Netty(port))
 
-fun enableNAISAPIModified(port: Int = 8080, doSomething: () -> Unit): Boolean =
+fun enableNAISAPIModified(
+    port: Int = 8080,
+    doSomething: () -> Unit,
+): Boolean =
     naisAPIServer(port).let { srv ->
         try {
             srv.start().use {

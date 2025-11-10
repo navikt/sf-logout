@@ -9,11 +9,23 @@ object Metrics {
     private val log = KotlinLogging.logger { }
     val cRegistry: CollectorRegistry = CollectorRegistry.defaultRegistry
 
-    fun registerCounter(name: String): Counter {
-        return Counter.build().name(name).help(name).register()
-    }
-    fun registerLabelCounter(name: String, vararg labels: String): Counter =
-        Counter.build().name(name).help(name).labelNames(*labels).register()
+    fun registerCounter(name: String): Counter =
+        Counter
+            .build()
+            .name(name)
+            .help(name)
+            .register()
+
+    fun registerLabelCounter(
+        name: String,
+        vararg labels: String,
+    ): Counter =
+        Counter
+            .build()
+            .name(name)
+            .help(name)
+            .labelNames(*labels)
+            .register()
 
     init {
         DefaultExports.initialize()

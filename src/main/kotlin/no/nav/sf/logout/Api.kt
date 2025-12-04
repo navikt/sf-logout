@@ -29,9 +29,9 @@ fun naisAPI(): HttpHandler =
                 Response(if (success) Status.OK else Status.INTERNAL_SERVER_ERROR).body("Called logout endpoint, success: $success")
             }
         },
-        "/isAlive" bind Method.GET to { Response(Status.OK) },
-        "/isReady" bind Method.GET to { Response(Status.OK) },
-        "/metrics" bind Method.GET to {
+        "/internal/isAlive" bind Method.GET to { Response(Status.OK) },
+        "/internal/isReady" bind Method.GET to { Response(Status.OK) },
+        "/internal/metrics" bind Method.GET to {
             runCatching {
                 StringWriter()
                     .let { str ->

@@ -2,9 +2,9 @@ apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
   name: sf-logout
-  namespace: teamcrm
+  namespace: platforce
   labels:
-    team: teamcrm
+    team: platforce
 spec:
   image: {{ image }}
   port: 8080
@@ -39,8 +39,8 @@ spec:
     - secret: sf-logout
   filesFrom:
     - secret: sf-logout
-  ingresses:
-    - "https://communitylogout.nav.no"
+#  ingresses:
+#    - "https://communitylogout.nav.no"
   accessPolicy:
     outbound:
       external:

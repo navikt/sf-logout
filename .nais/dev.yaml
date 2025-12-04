@@ -50,9 +50,3 @@ spec:
   env:
     - name: SF_TOKENHOST
       value: 'https://test.salesforce.com/services/oauth2/token'
-    - name: SF_INSTANCE
-      value: PREPROD
-    - name: SF_VERSION
-      value: 'v57.0'
-    - name: VAULT_INSTANCE
-      value: GCP

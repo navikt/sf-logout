@@ -41,6 +41,7 @@ fun refreshAccessToken() {
             Status.UNAUTHORIZED -> {
                 log.error { "Access token call salesforce unauthorized" }
             }
+
             Status.OK -> {
                 val result = gson.fromJson(it.bodyString(), AccessToken::class.java)
                 if (result == null) {
@@ -51,6 +52,7 @@ fun refreshAccessToken() {
                 workMetrics.tokenRefreshCount.inc()
                 log.info { "Access token refreshed" }
             }
+
             else -> {
                 log.error { "Access token call salesforce NOK" }
                 workMetrics.issues.labels("access token fetch NOK").inc()
